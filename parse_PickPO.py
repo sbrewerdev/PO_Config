@@ -23,6 +23,7 @@ def main():
             sphere_2 = "null"
             and_instr = "N"
             norm_instr = "N"
+            product_type = "null"
             flag = ""
             for line in s:
                 if "Open Section" in line:
@@ -38,7 +39,9 @@ def main():
                 if line.startswith("S"):
                     stock_or_patient = line[0]
                     po_group = line[1:3]
-                    vendor = line[3:line.index(":")] 
+                    vendor = line[3:line.index(":")]
+                if line.startswith(":6 = "):
+                    vendor = line[5:10].strip('"').strip()
                 if "AND" in line:
                     split = line.split("AND")
                     for section in split:
@@ -94,6 +97,9 @@ def main():
                         if 'mid(4,"7","4") le' in section:
                             sphere_2 = section[20:24]
                             #print(sphere_2)
+                        if 'instr("123789", 20)' in section:
+                            product_type = section[8:14]
+                            print(product_type)
                         if "instr(" in section:
                             if "{ 3 {" in section:
                                 if product_code_list != "null":
@@ -168,9 +174,22 @@ def main():
                     split = line.split(":")
                     mf_add_power = split[1][20:21]
                     #print(mf_add_power)
+                if line.startswith(':mid(4,"11","4")="') and " AND " not in line and " OR " not in line:
+                    cylinder = line[18:22]
+                    #print(cylinder)
+                if line.startswith(':mid(4,"11","1")="') and " AND " not in line and " OR " not in line:
+                    mf_add_power = line[18:19]
+                    #print(mf_add_power)
                 if line.startswith(':3=') and " AND " not in line and " OR " not in line:
                     product_code_list = line[3:12].strip('"').strip()
                     #print(product_code_list)
+                if line.startswith(':mid(4,"1","5")="') and " AND " not in line and " OR " not in line:
+                    base_curve = line[17:19]
+                    diameter = line[19:22]
+                    #print(base_curve, diameter)
+                if line.startswith(':mid(4,"6","1") = "') and " AND " not in line and " OR " not in line:
+                    plus_or_minus = line[19:20]
+                    #print(plus_or_minus)
                 if line.startswith("::end:"):
                     if "*" in product_code_list:
                         product_code_list = product_code_list.lstrip("*").rstrip("*")
@@ -178,19 +197,19 @@ def main():
                         #print(product_code_list)
                         if "*" not in quantity:
                             for product_code in product_code_list:
-                                records.append([{"vendor":vendor, "S|P":stock_or_patient, "PO_Group":po_group, 
+                                records.append({"vendor":vendor, "S|P":stock_or_patient, "PO_Group":po_group, 
                                 "Product_Code":product_code, "Vendor_Code_List":vendor_code_list, "Quantity":quantity,
                                 "Plus_or_Minus":plus_or_minus, "Base_Curve":base_curve, "Diameter":diameter,
                                 "MF_Add_Power":mf_add_power, "Cylinder":cylinder, "Sphere_1":sphere_1,
-                                "Sphere_2":sphere_2}])
+                                "Sphere_2":sphere_2})
                         if "*" in quantity:
                             quantity = quantity.split("*")
                             for (i,j) in zip(product_code_list, quantity):
-                                records.append([{"vendor":vendor, "S|P":stock_or_patient, "PO_Group":po_group, 
+                                records.append({"vendor":vendor, "S|P":stock_or_patient, "PO_Group":po_group, 
                                 "Product_Code":i, "Vendor_Code_List":vendor_code_list, "Quantity":j,
                                 "Plus_or_Minus":plus_or_minus, "Base_Curve":base_curve, "Diameter":diameter,
                                 "MF_Add_Power":mf_add_power, "Cylinder":cylinder, "Sphere_1":sphere_1,
-                                "Sphere_2":sphere_2}])
+                                "Sphere_2":sphere_2})
                         #print(product_code_list, vendor, po_group)
                     else:
                         records.append({"vendor": vendor, "S|P": stock_or_patient, "PO_Group" :po_group, 
@@ -216,6 +235,7 @@ def main():
                     sphere_2 = "null"
                     and_instr = "N"
                     norm_instr = "N"
+                    product_type = "null"
                     flag = ""            
         o.write(json.dumps(records))
     write_import(records)
@@ -226,9 +246,8 @@ def write_import(records):
                       "Vendor_Code_List", "Quantity", "Plus_or_Minus", "Base_Curve", 
                       "Diameter", "MF_Add_Power", "Cylinder", "Sphere_1", "Sphere_2"]
         dict_writer = csv.DictWriter(f, fieldnames=fieldnames)
-        for dictionary in records:
-            dict_writer.writeheader()
-            dict_writer.writerow(dictionary)
+        dict_writer.writeheader()
+        dict_writer.writerows(records)
 
 
 if __name__ == "__main__":
