@@ -1,0 +1,735 @@
+:' 06/10/21 - aif - Ongoing PO Restructure with Chris:'            All 4 major vendors:
+:' 01/28/21 - SGB - Added SAA91, SAB91, SAC91, and SAU91:' May need to be separated by cyl later on.:
+:' 01/19/20 - TAJ - Sorted 1021 and 1023 by Isle (first char of:' location):
+:' 11/19/20 - Added account 60500 for B & L trial only fullfilment:':
+:' 08/19/20 - Added missing Member PO Groups to MakeOrders loops:'            Made some adjustments to Cooper, set other 3 to same PO groupings:
+:' 06/15/20 - Rearranged Cooper Patient, cleaned up disco'd products:'            added MTO for pcmft & bfmft:
+:' 06/09/20 - Added Patient group for Biofinity Multifocal Toric:'            aif:
+:' 04/09/20 - Added 1017 and 1056 to SAA102 for full cases. Moved:'            cases of 3105, 4067, and 4110 to SAD91 and SAN91:
+:' 01/28/20 - Split pcode 7049 by CYL, and shifted the groups:'            accordingly. ZM:
+:' 01/27/20 - Break out STP section for top 4 vendors based on pick:' ticket print / also section for that and panther only:
+:' 12/19/19 - Added goto's for SBK102 - SBP102. ZM:':
+:' 12/02/19 - Split BioTrue 90's (1017) from 30's and Trials.:'            SBB102-SBI102. Shifted everything else down. ZM:
+:' 11/15/19 - Added Pcode 3111 and 3112 to SAD91 when qty >= 28:'            ZM:
+:' 10/25/19 - Fixed Cyl in SBE102 from -175 -> -225. Added groups:'            SHO102 -> SHV102 on Pcode 1022. Split Cyl and H/L. ZM:
+:' 10/08/19 - Split SSM101 by -175 and -225. Split SSN101 by:'            D/N. Moved label down accordingly up to SSR101. ZM:
+:' 10/04/19 - Removed SAA91 - SAD91, combining it with SAI91.:'            Shifted SAI91 to SAD91:
+:' 09/20/19 - Removed Qty >= 3 requirement from SUB101 - SUM101.:'            ZM:
+:' 09/17/19 - Added PCode 3016 to (SCA91 - SCD91). Fixed B&L UMFA:'            Trials splitting by High and Low (SEA102 - SHM102):
+:' 09/16/19 - Added VSP Patient and Stock sections, only a sphere:'            product to start used AA & ZZ blocks for both:
+:' 09/10/19 - Added SAI107 and SOJ107, splitting into their own:'            groups before the Case catch all. ZM:
+:' 08/20/19 - Updated parameters for searching High/Low on:'            product 1021 from 11 -> 19 (SEA102 -> SHN102). ZM:
+:' 08/19/19 - Added Group C to 102 for differnt Cyl and negative:'            Sphere:
+:' 08/16/19 - Separated Air Optix Hydra for Astig from:'            SAH91 to SAL91. Created Cyl breaks as well:
+:' 04/25/19 - Broke out Orion Patients in groups for different:'            ordering processes:
+:' 04/10/19 - corrected  Cooper grp 2 instr/jpo:':
+:' 03/12/19 - Removed the DOW rule for Vendors 170 - X-Cel,:'            381 - Clearlab, and any "catch all" vendoe POs:
+:' 02/26/19 - Broke B&L full case group into PCode & Qty, it was:'            5 gt "  28" before and they are all diffrent case sizes:
+:' 02/21/19 - Vistakon Oasys 1day FA, Vita FA and fix Alcon Night:'            and day and Z loop:
+:' 02/19/19 - Split B&L stp pass up so that Optima toric is on it's:'            own PO if it's a STP:
+:' 02/06/19 - Some additional tweaks to B & L non case Stock PO's:':
+:' 01/30/19 - Some more tweaks to Alcon Stock PO after the last:'            changes - aif:
+:' 01/10/19 - Massive B&L Cooper and Alcon stock PO changes:'            requested by Andy and Lisa:
+:' 12/10/18 - Updated the Patient Selection frequency for vendors:'            Menicon (362) and X-Cel (134) per CRF/jpo:
+:' 10/12/18 - Broke up Biotrue trials by + pwr and cyl, broke up:'            ultra for astig trials by cyl then pwrs + & -:
+:' 09/18/18 - Added loop in Cooper Patient section to consolidate:'            PO's w/o breaking Product groups:
+:' 08/23/18 - Added Orion Patient Section:':
+:' 08/14/18 - Created Vision Source catch all (ZV) for patient:'            orders:
+:' 06/08/18 - Consolidated Alcon Stock PO to 1 for full case and:'            1 for not full case - aif:
+:' 06/01/18 - Broke up Ultra and Biotrue Toric stock orders by cyl:'            and power - aif:
+:' 03/16/18 - Moved Cooper 90 packs onto their own PO's starting:'            with Proclear and Clariti Sphere's:
+:' 03/09/18 - Vita for astig trial and rev on their own full case:'            PO - aif:
+:' 02/06/18 - Added selection for ZEISS Stock Lenses - Only create:'            Finished Single Vision on Mon(2) & Thu(5):
+:' 10/25/17 - Added MyDay Toric, Vita for Astig, Ultra for Astig:'            BioTrue for Astig:
+:' 10/23/17 - Broke our B & L Stock Catch All (non-case) into a:'            few small PO's | Stopped Avaira toric from processing:
+:'            On Tuesday's (not free freight day) - aif:':
+:' 09/15/17 - Adjusted Vistakon Stock section (units) to reduce the:'            size of group zz catch all section:
+:' 09/14/17 - Adjusted Vistakon Stock section (full cases) to make:'            pallets deconstruction more efficient:
+:' 08/21/17 - Added STP and Patient sections for VTI 1130's and also:'            started a STK section but nothing is in it:
+:' 07/19/17 - Latest update for Cooper Shipping affecting both:'            stock and Patient PO's:
+:' 03/05/17 - Removed the Stock Lenses Vendor "EXCLUSION" per CRF:'            to allow Stock POs to be created OverNight:
+:' 01/19/17 - Added STP section which MakeOrders will make a pass:'            on first to get STP's on their own PO's per vendor:
+:' 01/18/17 - Updated "nogrp" option:':
+:' 2/27/16 - Updated Stock Lens Vendor exclusions:'           "Stock section" - Patient takes all LS:
+:' Updated 05/25/16 - Changed Cooper groups to create fewer PO's:' for new shipping deal.  Grouped XR's w/UPC's       -  aif:
+:' Updated 08/14/16 - Updated Vendors for 1530 selection:'                    Stock Lense / jpo:
+::declare STP(1,*), grpPO(1,*), ph1(2,.0), ph2(2,.0), ph3(100):
+::declare curGrp(100), pwr(5,*), cyl(4,*), loc(4,*):
+::declare pickTicketPrint(1,*):
+:@pw ge "AF" AND 6 = " 102":debug on:
+:@pm="":end:
+:1 gt "":end:
+:2 gt "" and 2 ne "00000000":end:
+:'@pm is 4 fields. The first position is an S, P or C indicating:'Stock, Patient or Custom order.  The second position a character:
+:'indicating which custom order to run. A, B, C.... 1, 2, 3 etc.:'The third character is used by "LensOrder" processing to:
+:'indicate whether or not to check the "exclude" data base.  The:'only value currently recognized is "N".  Last four positions are:
+:'the vendor number.  Vendor number "0" tells the stock or patient:'orders to print "All" vendors.  See those sections below for any:
+:'specific exceptions.  All positions must be filled. Contents of:'second position isn't relevant for stock or patient.:
+::':
+:v=""               ' T=1st 2 characters    V=Vendor Number:pm(7)=@pm ; t(1,allup,G)=mid(pm,"1","1") ; v(4,#,G)=mid(pm,"2","4"):
+:t="" or v="":end:
+:t="S":goto Stock:
+:t="P":goto Patient:
+:t="X":goto Ship2P:
+:' Check here if Invoice is STP or not::
+Ship2P::lookup inv = Invoice@  k=8    i=D -nx:
+:not inv:end:
+:inv(28) gt "":STP="*":
+:STP="":end:
+:STP="*" AND v="  91" AND 6="  91":goto STP91:
+:STP="*" AND v=" 101" AND 6=" 101":goto STP101:
+:STP="*" AND v=" 102" AND 6=" 102":goto STP102:
+:STP="*" AND v=" 107" AND 6=" 107":goto STP107:
+:STP="*" AND v=" 321" AND 6=" 321":goto STP321:
+::end:
+::':
+Stock:':':
+:8 gt "":end:
+:' DROP Stock Lens Vendors if NOT Mon(2) or Thu(5):' unless this is a "Demand" run:
+:'20 eq "L" and instr("25",DOW(@td)) eq "0" and @pz ne "demand":'end:
+:v="  91" and 6="  91":goto STK91:
+:v=" 101" and 6=" 101":goto STK101:
+:v=" 102" and 6=" 102":goto STK102:
+:v=" 107" and 6=" 107":goto STK107:
+:v=" 118" AND 6=" 118":goto STK118:
+:v=" 170" and 6=" 170":goto STK170:
+:v=" 175" and 6=" 175":goto STK175:
+:v=" 204" and 6=" 204":goto STK175:
+:v=" 321" AND 6=" 321":goto STK321:
+:v="1000" and 6="1000":goto STK1000:
+:v="1001" and 6="1001":goto STK1001:
+:v="1003" and 6="1003":goto STK1003:
+:v="1008" and 6="1008":goto STK1008:
+:v="1013" and 6="1013":goto STK1013:
+:v="1014" and 6="1014":goto STK1014:
+:v="1015" and 6="1015":goto STK1015:
+:v="1016" and 6="1016":goto STK1016:
+:v ne "   0":end:
+::select ; end:
+::':
+Patient:':':
+:20 eq "L":goto LSPAT:
+:8="":end:
+:@pz=""  OR  @pz="Z":goto NoGrp:
+::lookup mem = Members@  k=14   i=A -nx:
+:not mem:end:
+:instr(@pz,mem(76)) gt "0":goto NoGrp:
+::end:
+::':
+NoGrp:6=" 102" and v=" 102":goto 102PAT:
+:6=" 107" and v=" 107":goto 107PAT:
+:6="  91" and v="  91":goto 91PAT:
+:6=" 101" and v=" 101":goto 101PAT:
+:6=" 115" AND v=" 115":goto 115PAT:
+:6=" 118" AND v=" 118":goto 118PAT:
+:6=" 134" AND v=" 134":goto 134PAT:
+:6=" 170" and v=" 170":goto 170PAT:
+:6=" 175" and v=" 175":goto 175PAT:
+:6=" 204" and v=" 204"    ' Sending Lombart with Unilens orders:goto 175PAT              ' as of 09-01-2015 / jpo:
+:6=" 207" and v=" 207":goto 207PAT:
+:6=" 321" AND v=" 321":goto 321PAT:
+:6=" 362" AND v=" 362":goto 362PAT:
+:6=" 381" and v=" 381":goto 381PAT:
+:6=v:select ; end:
+:v ne "   0":end:
+::'List of vendors not included in "All" (0):
+::'B&L and Ciba:
+:6=" 102" or 6="  91":end:
+::'Cooper and Vistakon:
+:6=" 100" or 6=" 101" or 6=" 107":end:
+::'Orion:
+:6=" 115":end:
+::'Hydrogel:
+:6=" 170":end:
+::'Sunsoft and Westcon:
+:6=" 148" or 6=" 256":end:
+:' 03/12/19 - Removed the DOW rule per Chris / jpo:':
+:' instr("35",DOW(@td)) gt "0":select:
+::end:
+::':
+:'*****************************************************************:'                 Vendor Patient STP Selection:
+:'*****************************************************************:'----- Alcon STP -----:
+:' 1st passes through Patient orders plucks out STP orders in this:' section:
+STP91:':':
+:STP="" OR 6 ne "  91":end:
+:@pw="A":goto STP91A:
+:@pw="B":goto STP91B:
+:@pw="C":goto STP91C:
+:@pw="D":goto STP91D:
+:@pw="Z":goto STP91Z:
+::end:
+STP91A:' Panther Pick ticket printed:':
+:30 ne "15000 ":end:
+::gosub ckPrint:
+:pickTicketPrint="1":select:
+::end:
+STP91B:' Panther pick ticket not printed:':
+:30 ne "15000 ":end:
+::gosub ckPrint:
+:pickTicketPrint="0":select:
+::end:
+STP91C:' Pick ticket printed:':
+::gosub ckPrint:
+:pickTicketPrint="1":select:
+::end:
+STP91D:' Pick ticket not printed:':
+::gosub ckPrint:
+:pickTicketPrint="0":select:
+::end:
+STP91Z:':':
+::select:
+::end:
+:'----- End Alcon STP -----:'----- Cooper STP -----:
+STP101:':':
+:STP="" OR 6 ne " 101":end:
+:@pw="A":goto STP101A:
+:@pw="B":goto STP101B:
+:@pw="C":goto STP101C:
+:@pw="D":goto STP101D:
+:@pw="E":goto STP101E:
+:@pw="F":goto STP101F:
+:@pw="Z":goto STP101Z:
+::end:
+STP101A:' Panther pick ticket printed and one of these product codes:':
+:' Biofinity Toric XR | Biofinity Toric XR *Trial*:' Proclear Multifocal Toric | Proclear Multifocal Toric *Trial*:
+:' Proclear Multifocal Toric XR | Proclear Multifocal Toric XR *Trial*:' Biofinity Multifocal Toric | Biofinity Multifocal Toric *Trial*:
+:30 ne "15000 ":end:
+::gosub ckPrint:
+:pickTicketPrint="1" AND instr("*6119*6120*6129*6130*7426*7427*7428*7429*","*"{3{"*") gt "0":select:
+::end:
+STP101B:' Panther pick ticket not printed and one of these product codes:':
+:' Biofinity Toric XR | Biofinity Toric XR *Trial*:' Proclear Multifocal Toric | Proclear Multifocal Toric *Trial*:
+:' Proclear Multifocal Toric XR | Proclear Multifocal Toric XR *Trial*:' Biofinity Multifocal Toric | Biofinity Multifocal Toric *Trial*:
+:30 ne "15000 ":end:
+::gosub ckPrint:
+:pickTicketPrint="0" AND instr("*6119*6120*6129*6130*7426*7427*7428*7429*","*"{3{"*") gt "0":select:
+::end:
+STP101C:' Panther pick ticket printed (and not a pcode from A or B:' stp group):
+:30 ne "15000 ":end:
+::gosub ckPrint:
+:pickTicketPrint="1":select:
+::end:
+STP101D:' Panther pick ticket not printed (and not a pcode from A or B:' stp group):
+:30 ne "15000 ":end:
+::gosub ckPrint:
+:pickTicketPrint="0":select:
+::end:
+STP101E:' Pick ticket printed:':
+::gosub ckPrint:
+:pickTicketPrint="1":select:
+::end:
+STP101F:' Pick ticket not printed:':
+::gosub ckPrint:
+:pickTicketPrint="0":select:
+::end:
+STP101Z:' STP Catch All:':
+:6 = " 101":select:
+::end:
+:'----- End Cooper STP -----:'----- B&L STP -----:
+STP102:':':
+:STP="" OR 6 ne " 102":end:
+:@pw="A":goto STP102A:
+:@pw="B":goto STP102B:
+:@pw="C":goto STP102C:
+:@pw="D":goto STP102D:
+:@pw="Z":goto STP102Z:
+::end:
+STP102A:' Panther and pick ticket printed:':
+:30 ne "15000 ":end:
+::gosub ckPrint:
+:pickTicketPrint="1":select:
+::end:
+STP102B:' Panther and pick ticket not printed:':
+:30 ne "15000 ":end:
+::gosub ckPrint:
+:pickTicketPrint="0":select:
+::end:
+STP102C:' Pick ticket printed:':
+::gosub ckPrint:
+:pickTicketPrint="1":select:
+::end:
+STP102D:' Pick ticket not printed:':
+::gosub ckPrint:
+:pickTicketPrint="0":select:
+::end:
+STP102Z:':':
+:6=" 102":select:
+::end:
+:'----- End B&L STP -----:'----- J&J STP -----:
+STP107:':':
+:STP="" OR 6 ne " 107":end:
+:@pw="A":goto STP107A:
+:@pw="B":goto STP107B:
+:@pw="C":goto STP107C:
+:@pw="D":goto STP107D:
+:@pw="Z":goto STP107Z:
+::end:
+STP107A:' Panther and pick ticket printed:':
+:30 ne "15000 ":end:
+::gosub ckPrint:
+:pickTicketPrint="1":select:
+::end:
+STP107B:' Panther and pick ticket not printed:':
+:30 ne "15000 ":end:
+::gosub ckPrint:
+:pickTicketPrint="0":select:
+::end:
+STP107C:' Pick ticket printed:':
+::gosub ckPrint:
+:pickTicketPrint="1":select:
+::end:
+STP107D:' Pick ticket not printed:':
+::gosub ckPrint:
+:pickTicketPrint="0":select:
+::end:
+STP107Z:':':
+::select:
+::end:
+:'----- End J&J STP -----:'----- VTI STP -----:
+STP321:':':
+:STP="" OR 6 ne " 321":end:
+::select:
+:'----- End VTI STP:'*************** End Vendor Patient STP Selection ****************:
+207PAT:':':
+:6 ne " 207":end:
+:@pw="ZZ":goto PZZ207:
+::end:
+PZZ207:::
+:6=" 207":select:
+::end:
+::':
+175PAT:::
+:' instr("35",DOW(@td))="0" 'ONLY RUN TUE & THURS:' exit:
+:' 6 ne " 175":' end:
+:instr("*175*204*","*"{ 6 {"*") eq "0":end:
+:@pw="AA":goto PAA175:
+:@pw="ZZ":goto PZZ175:
+::end:
+::':
+PAA175:::
+:' Product clean-up 09-01-2015 / jpo:':
+:instr("*7501*7502*7504*7505*7508*7510*7535*7536*7537*7538*","*"{3{"*") gt "0":select:
+::end:
+PZZ175:::
+:' 6=" 175":' select:
+:instr("*175*204*","*"{ 6 {"*") gt "0":select:
+::end:
+::':
+:'*****************************************************************:'                     Hydrogel Patient Orders:
+:'*****************************************************************:':
+170PAT:':':
+:' instr("246",DOW(@td))="0" 'ONLY RUN Mon/Wed/Fri:' exit:
+:instr("*7636*7637*","*"{3{"*") gt "0":goto skp4xrp:
+:@id="aaron":goto skp4xrp:
+:' instr("35",DOW(@td))="0" 'ONLY RUN TUE & THURS:' exit:
+skp4xrp:@pw="AA":goto PAA170:
+:@pw="AB":goto PAB170:
+:@pw="AC":goto PAC170:
+:@pw="AD":goto PAD170:
+:@pw="AE":goto PAE170:
+:@pw="AF":goto PAF170:
+:@pw="AG":goto PAG170:
+:@pw="AH":goto PAH170:
+:@pw="AI":goto PAI170:
+:@pw="AJ":goto PAJ170:
+:@pw="AK":goto PAK170:
+:@pw="AL":goto PAL170:
+:@pw="AM":goto PAM170:
+:@pw="AN":goto PAN170:
+:@pw="AO":goto PAO170:
+:@pw="AP":goto PAP170:
+:@pw="ZZ":goto PZZ170:
+::end:
+PAA170:::
+:30=" 4000 " and instr("*CG7601*CG7605*CG7613*CG7617*CG7619*CG7621*CG7623*CG7624*","*"{3{"*") gt "0":select:
+:30=" 4000 " and instr("*CG7626*CG7627*CG7628*CG7629*CP7630*","*"{3{"*") gt "0":select:
+::end:
+PAB170:::
+:' 30=" 3634 " and instr("*CP7623*CP7624*CP7630*","*"{3{"*") gt "0":' select:
+::end:
+PAC170:::
+:' 30="  610 " and instr("*CP7601*CP7605*CP7613*CP7617*CP7619*CP7621*CP7623*CP7624*","*"{3{"*") gt "0":' select:
+:' 30="  610 " and instr("*CP7626*CP7627*CP7628*CP7629*CP7630*","*"{3{"*") gt "0":' select:
+::end:
+PAD170:::
+:14=" 3220A" and instr("*CP7623*CP7624*CP7613*CP7617*CP7630*","*"{3{"*") gt "0":select:
+::end:
+PAE170:::
+:14=" 3220B" and instr("*CP7623*CP7624*CP7613*CP7617*CP7630*","*"{3{"*") gt "0":select:
+::end:
+PAF170:::
+:14=" 3220C" and instr("*CP7623*CP7624*CP7613*CP7617*CP7630*","*"{3{"*") gt "0":select:
+::end:
+PAG170:::
+:14=" 3220D" and instr("*CP7623*CP7624*CP7613*CP7617*CP7630*","*"{3{"*") gt "0":select:
+::end:
+PAH170:::
+:14=" 3220E" and instr("*CP7623*CP7624*CP7613*CP7617*CP7630*","*"{3{"*") gt "0":select:
+::end:
+PAI170:::
+:14=" 3220F" and instr("*CP7623*CP7624*CP7613*CP7617*CP7630*","*"{3{"*") gt "0":select:
+::end:
+PAJ170:::
+:14=" 3220G" and instr("*CP7623*CP7624*CP7613*CP7617*CP7630*","*"{3{"*") gt "0":select:
+::end:
+PAK170:::
+:14=" 3220H" and instr("*CP7623*CP7624*CP7613*CP7617*CP7630*","*"{3{"*") gt "0":select:
+::end:
+PAL170:::
+:30=" 2410 " and instr("*CP7601*CP7605*CP7613*CP7617*CP7619*CP7621*CP7623*CP7624*","*"{3{"*") gt "0":select:
+:30=" 2410 " and instr("*CP7626*CP7627*CP7628*CP7629*CP7630*","*"{3{"*") gt "0":select:
+::end:
+PAM170:::
+:30=" 2800 " and instr("*CP7601*CP7605*CP7613*CP7617*CP7619*CP7621*CP7623*CP7624*","*"{3{"*") gt "0":select:
+:30=" 2800 " and instr("*CP7626*CP7627*CP7628*CP7629*CP7630*","*"{3{"*") gt "0":select:
+::end:
+PAN170:::
+:14=" 5384 " and instr("*CP7601*CP7605*CP7613*CP7617*CP7619*CP7621*CP7623*CP7624*","*"{3{"*") gt "0":select:
+:14=" 5384 " and instr("*CP7626*CP7627*CP7628*CP7629*CP7630*","*"{3{"*") gt "0":select:
+::end:
+PAO170:' Extreme H2O 59% Toric XRP:' Extreme H2O 59% Toric XRP *TRIAL*:
+:'* Must be on their own PO, order is EDI'd to different location *:' MTO lens:
+:instr("*7636*7637*","*"{3{"*") gt "0":select:
+::end:
+PAP170:' Toricolors Extreme H2O Sphere 54%:' Toricolors Extreme H2O Toric 54%:
+:instr("*7638*7639*","*"{3{"*") gt "0":select:
+::end:
+PZZ170:' Hydrogel Catch All:':
+:6=" 170":select:
+::end:
+:':'**************** End Hydrogel Patient Orders ********************:
+:'*****************************************************************:'                    B & L Patient Orders:
+:'*****************************************************************:':
+102PAT:':':
+:@pw="AA":goto PAA102:
+:@pw="ZA":goto PZA102:
+:@pw="ZZ":goto PZZ102:
+::end:
+PAA102:' Optima toric, discontinued 12/03/20:' All products by group to catch all now 08/19/2020 - aif:
+:3="   1055":select:
+::end:
+PZA102:' Special B&L trials only:'  All PriceLike 60500:
+:30 ne "60500 ":end:
+::select:
+::end:
+PZZ102:' After STP run, grab all products here by group 08/19/2020 - aif:':
+:6=" 102":select:
+::end:
+:':'******************* End B & L Patient Orders ********************:
+:'*****************************************************************:'                       Vistakon Patient:
+:'*****************************************************************:':
+107PAT:':':
+:@pw="AA":goto PAA107:
+:'@pw="ZA":'goto PZA107:
+:'@pw="ZB":'goto PZB107:
+:@pw="ZZ":goto PZZ107:
+::end:
+::':
+PAA107:':':
+:instr("*7043*T7049*","*"{3{"*") gt "0":select:
+::end:
+PZZ107:':':
+:6=" 107":select:
+::end:
+:':'********************* End Vistakon Patient **********************:
+:'*****************************************************************:'                         Alcon Patient:
+:'*****************************************************************:':
+91PAT:':':
+:@pw="ZZ":goto PZZ91:
+::end:
+::':
+PZZ91:::
+:6="  91":select:
+::end:
+:':'********************** End Alcon Patient ************************:
+:'*****************************************************************:'                        Cooper Patient:
+:'*****************************************************************:':
+101PAT:':':
+::'No Avaira Toric on Tuesdays:
+:DOW(@td)="3" AND instr("*6110*6111*","*"{3{"*") gt "0":end:
+:' instr("2",DOW(@td)) gt "0" and mid(@td,"4","2") lt "22":' end:
+:8="":end:
+::'             Go through Product Group by PO Group:
+:' If group is meant to have all products for group on one PO then:' by PO group will use gosub's to loop instead of goto's:
+:' instr("2",@pz) gt "0":' goto 101POGP:
+:instr(@pz,"2") gt "0":goto 101POGP:
+::'----- Product Group -----:
+:@pw="AA"                ' Start Group A:goto PAA101:
+:@pw="AB":goto PAB101:
+:@pw="AC":goto PAC101:
+:@pw="AD":goto PAD101:
+:@pw="AE":goto PAE101:
+:@pw="AF":goto PAF101:
+:@pw="AG":goto PAG101:
+:@pw="AH":goto PAH101:
+:@pw="AI":goto PAI101:
+:@pw="AJ":goto PAJ101:
+:@pw="AK":goto PAK101:
+:@pw="BA"                ' Start Group B:goto PBA101:
+:@pw="BB":goto PBB101:
+:@pw="BC":goto PBC101:
+:@pw="BD":goto PBD101:
+:@pw="BE":goto PBE101:
+:@pw="BF":goto PBF101:
+:@pw="BG":goto PBG101:
+:@pw="CA"           'Temp group C:goto PCA101:
+:@pw="CB":goto PCB101:
+:@pw="ZV"                ' Start Group Z:goto PZV101:
+:@pw="ZZ":goto PZZ101:
+::end:
+:'----- End Product Group -----:'----- By PO Group -----:
+101POGP:':'          i.e.  @pz=A-ABCDEF|B-ABCD|C-ABCDEFG:
+:' Use pipes&dash and place holder vars to break strings to check:' First letter {dash} then each letter after i.e. AA AB AC AD:
+::ph3=@pw; grpPO="*":
+101gplp::ph1=instr(ph3,"|"):
+:ph1 le "0"                 ' If no pipe set ph1 to dlen() + 1:ph1=dlen(""{ph3{"") + "1"; ' where pipe would be:
+::curGrp=mid(ph3,"1",ph1-"1"):
+::ph2=instr(curGrp,"-"):
+:' Letter 1    'B'     -       Letter group    'ABCDEF':la=mid(curGrp,"1",ph2-"1"); lb=mid(curGrp,ph2+"1",dlen(""{curGrp{"")):
+:mid(la,"1","1")="A":gosub 101GPA:
+:mid(la,"1","1")="B":gosub 101GPB:
+:mid(la,"1","1")="C":gosub 101GPC:
+:mid(la,"1","1")="D":gosub 101GPD:
+:mid(la,"1","1")="E":gosub 101GPE:
+:mid(la,"1","1")="F":gosub 101GPF:
+:ph1 le "0"     ' no pipe delimiter was found then end here:end:
+:':' Grab next section of @pz string if there is one, use curGrp as:
+:' place holder to tansfer and loop back through if there is one:curGrp=ph3:
+:' ph1 is still the first pipe found at the top:ph3=mid(curGrp,ph1+"1",dlen(""{curGrp{"")):
+:ph3 gt "":goto 101gpLp:
+::end:
+101GPA:':':
+::return:
+101GPB:':':
+:instr(lb,"A") gt "0":gosub PBA101:
+:instr(lb,"B") gt "0":gosub PBB101:
+:instr(lb,"C") gt "0":gosub PBC101:
+:instr(lb,"D") gt "0":gosub PBD101:
+:instr(lb,"E") gt "0":gosub PBE101:
+:instr(lb,"F") gt "0":gosub PBF101:
+::return:
+101GPC:':':
+::return:
+101GPD:':':
+::return:
+101GPE:':':
+::return:
+101GPF:':':
+::return:
+:'----- End By PO Group -----:':
+:'                       **** Group A ****::
+PAA101:' Hydrosoft | Tuesday and Thursday only:' **** This is blocked in the catch all ****:
+:instr("35",DOW(@td))="0" 'Only run Tue & Thurs:exit:
+:instr("*6060*6061*6062*6063*6068*6072*","*"{3{"*") gt "0":select; end:
+:instr("*O6060*O6061*O6062*O6063*O6068*O6072*","*"{3{"*") gt "0":select; end:
+::end:
+PAB101:' Products with No UPC code | Tuesday and Thursday only:':
+:instr("35",DOW(@td))="0" 'Only run Tue & Thurs:exit:
+:instr("*6129*6130*","*"{3{"*") gt "0":end:
+::ky=3&4:
+::lookup inv = Inventory@  k=ky   i=a -nx:
+:not inv:select ; end:
+:inv(11)="":select:
+::end:
+PAC101:' XR's with UPC's:':
+:instr("*6113*6114*6119*6120*6129*6130*7426*7427*7428*7429*7431*7432*","*"{3{"*") gt "0":select:
+::end:
+PAD101:' Proclear Multifocal Toric:' Proclear Multifocal Toric *Trial*:
+:'Added to AC - 08/10/2020 - aif::
+:instr("*7426*7427*","*"{3{"*") gt "0":select:
+::end:
+PAE101:' Biofinity Multifocal Toric:' Biofinity Multifocal Toric *Trial*:
+:'Added to AC - 08/10/2020 - aif::
+:instr("*6129*6130*","*"{3{"*") gt "0":select:
+::end:
+PAF101:':'                   ***** Open Section *****:
+::end:
+PAG101:':'                    **** Open Section ****:
+::end:
+PAH101:':'                    ***** Open Section *****:
+::end:
+PAI101:':'                   ***** Open Section *****:
+::end:
+PAJ101:'                       ***** Open *****:':
+::end:
+PAK101:':'                     ***** Open Section *****:
+::end:
+:'                       **** Group B ****::
+:' Using Group B to break up Member group 2 PO's into smaller ones:' Other groups can be added to this loop in MakeOrders if need be:
+PBA101:' XR's Part 1:' Proclear Toric XR:
+:instr("*6129*6130*7428*7429*","*"{3{"*") gt "0":select; end:
+:grpPO gt "":return:
+::end:
+PBB101:' XR's Part 2:' Biofinity Toric XR:
+:instr("*6119*6120*","*"{3{"*") gt "0":select; end:
+:grpPO gt "":return:
+::end:
+PBC101:':'                  ***** Open Section *****:
+::end:
+PBD101:' Biofinity Sphere | Biofinity Sphere *Trial* | Biofinity Toric:' Biofinity Toric *Trial*| Biofinity MF | Biofinity MF *Trial*:
+:instr("*6103*6104*6115*6116*6117*6118*","*"{3{"*") gt "0":select; end:
+:grpPO gt "":return:
+::end:
+PBE101:' Avaira Sphere | Avaira Sphere *Trial* | Avaira Toric:' Avaira Toric *Trial* | Vitality Sphere | Vitality Sphere *Trial*:
+:' Vitality Toric | Vitality Toric *Trial*::
+:instr("*6108*6109*6110*6111*6123*6124*6125*6126*","*"{3{"*") gt "0":select; end:
+:grpPO gt "":return:
+::end:
+PBF101:' Proclear Sphere | Proclear Sphere *Trial* | Proclear Toric:' Proclear Toric *Trial* | Proclear MF | Proclear MF *Trial*:
+:instr("*7415*7416*7420*7421*7424*7425*","*"{3{"*") gt "0":select; end:
+:grpPO gt "":return:
+::end:
+PBG101:':'                    ***** Open Section *****:
+::end:
+::                      '***** Group C *****:
+PCA101:':'                   ***** Open Section *****:
+::end:
+PCB101:':'                   ***** Open Section *****:
+::end:
+PZV101:':'                     Vision Source Catch All:
+:mid(3,"1","1") = "V":select:
+::end:
+PZZ101:'                      **** Catch All ****:':
+::'Hydrasoft not allowed in catch all:
+:instr("*6060*6061*6062*6063*6068*6072*","*"{3{"*") gt "0":end:
+:instr("*O6060*O6061*O6062*O6063*O6068*O6072*","*"{3{"*") gt "0":end:
+::                       'NO UPC'S:
+::ky=3&4:
+::lookup inv = Inventory@  k=ky   i=a -nx:
+:not inv:end:
+:inv(11)=""             'Keep No UPC's out of catch all:end:
+:6=" 101"               'Select anything with Vendor 101 that makes:select                 'it here:
+::end:
+:':'********************* End Cooper Patient ************************:
+:'*****************************************************************:'                         Orion Patient:
+:'*****************************************************************:':
+115PAT:':':
+:@pw="AA":goto PAA115:
+:@pw="AB":goto PAB115:
+:@pw="ZZ":goto PZZ115:
+::end:
+PAA115:' Gothika Theatrical Sphere:' Cosmetic Colormax Sphere:
+:' Cosmetic Venus Sphere:' Cosmetic Bella Sphere:
+:instr("*6901*6902*6903*6904*6905*6906*6907*","*"{3{"*") gt "0":select:
+::end:
+PAB115:' BioMed Therapeurtic:' Bio Sport:
+:instr("*6908*6909*6910*6911*","*"{3{"*") gt "0":select:
+::end:
+PZZ115:':':
+:6 = " 115":select:
+::end:
+:':'********************** End Orion Patient ************************:
+:'*****************************************************************:'                         VSP Patient:
+:'*****************************************************************:':
+118PAT:':':
+:@pw="AA":goto PAA118:
+:@pw="ZZ":goto PZZ118:
+::end:
+PAA118:':':
+:instr("*6301*6302*6303*6304*", "*"{3{"*") gt "0":select:
+::end:
+PZZ118:':':
+:6=" 118":select:
+::end:
+:':'********************** End VSP Patient *************************:
+:'*****************************************************************:'                         X-Cel Patient:
+:'*****************************************************************:':
+134PAT:':':
+:@pw="AA":goto PAA134:
+:@pw="ZZ":goto PZZ134:
+::end:
+PAA134:':':
+::end:
+PZZ134:':':
+:6 = " 134":select:
+::end:
+:':'********************** End X-Cel Patient ************************:
+:'*****************************************************************:'                         VTI Patient:
+:'*****************************************************************:':
+321PAT:':':
+:@pw="AA":goto PAA321:
+:@pw="ZZ":goto PZZ321:
+::end:
+PAA321:':':
+::end:
+PZZ321:':':
+:6=" 321":select:
+::end:
+:':'********************** End VTI Patient **************************:
+:'*****************************************************************:'                       Menicon Patient:
+:'*****************************************************************:':
+362PAT:':':
+:@pw="AA":goto PAA362:
+:@pw="ZZ":goto PZZ362:
+::end:
+PAA362:':':
+::end:
+PZZ362:':':
+:6=" 362":select:
+::end:
+:':'********************** End Menicon Patient **************************:
+381PAT:::
+:' instr("35",DOW(@td))="0" 'ONLY RUN TUE & THURS:' exit:
+:@pw="AA":goto PAA381:
+::end:
+PAA381:::
+:3="   6823" or 3="   6824":select:
+::end:
+::':
+::'End of Patient Orders/Beginning of Stock Orders:
+:'*****************************************************************:'                          Unilens Stock:
+:'*****************************************************************:':
+LSPAT:':':
+:v eq "   0":end:
+:v="1000" and 6="1000":goto PAT1000:
+:v="1001" and 6="1001":goto PAT1001:
+:v="1003" and 6="1003":goto PAT1003:
+:v="1008" and 6="1008":goto PAT1008:
+:v="1013" and 6="1013":goto PAT1013:
+:v="1014" and 6="1014":goto PAT1014:
+:v="1015" and 6="1015":goto PAT1015:
+:v="1016" and 6="1016":goto PAT1016:
+::end:
+PAT1000:' Nassau Stock Lenses:':
+:6="1000":sort6=4; select:
+::end:
+PAT1001:' Essilor Stock Lenses:':
+:6="1001":sort6=4; select:
+::end:
+PAT1003:' Hoya Stock Lenses:':
+:6="1003":sort6=4; select:
+::end:
+PAT1008:' Shore  Stock Lenses:':
+:6="1008":sort6=4; select:
+::end:
+PAT1013:' BluTech Stock Lenses:':
+:6="1013":sort6=4; select:
+::end:
+PAT1014:' OPTIMA Stock Lenses:':
+:6="1014":sort6=4; select:
+::end:
+PAT1015:' SOMO Stock Lenses:':
+:6="1015":sort6=4; select:
+::end:
+PAT1016:' ZEISS Stock Lenses:':
+:6="1016":sort6=4; select:
+::end:
+:'*****************************************************************:'                         Get Location:
+:'*****************************************************************:':
+getLoc:':':
+::loc="":
+::lookup inv = Inventory@ k=[3 & 4] i=A -nx:
+:inv:loc=inv(21); close inv:
+::return:
+:':'********************** End Get Location *************************:
+:'*****************************************************************:'                 Check Pick Ticket Print Status:
+:'*****************************************************************:':
+ckPrint:':':
+::pickTicketPrint="":
+:dlen(""{8{"") = "12":ky=8 & "1":
+:dlen(""{8{"") = "11":ky=8 < "" & "1":
+::lookup qct = QCTrail@ k=ky i=a -nx:
+:not qct:pickTicketPrint="0":
+:qct:pickTicketPrint="1":
+::return:
+:':'************** End Check Pick Ticket Print Status ***************:
